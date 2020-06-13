@@ -31,8 +31,8 @@ class SearchActivity : AppCompatActivity(), CoroutineScope {
     private fun setUpSearchStateFlow() {
         launch {
             searchView.getQueryTextChangeStateFlow()
-                .debounce(100)
-                .filter { query ->
+                .debounce(300) //discard any chars typed within 300ms
+                .filter { query -> //filter all non empty text entered in search view
                     if (query.isEmpty()) {
                         textViewResult.text = ""
                         return@filter false
@@ -42,12 +42,12 @@ class SearchActivity : AppCompatActivity(), CoroutineScope {
                 }
                 .distinctUntilChanged()
                 .flatMapLatest { query ->
-                    dataFromNetwork(query)
+                    dataFromNetwork(query) //fake network request
                         .catch {
                             emitAll(flowOf(""))
                         }
                 }
-                .flowOn(Dispatchers.Default)
+                .flowOn(Dispatchers.Default) //this is for not to block main thread
                 .collect { result ->
                     textViewResult.text = result
                 }
