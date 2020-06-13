@@ -31,7 +31,7 @@ class SearchActivity : AppCompatActivity(), CoroutineScope {
     private fun setUpSearchStateFlow() {
         launch {
             searchView.getQueryTextChangeStateFlow()
-                .debounce(300)
+                .debounce(100)
                 .filter { query ->
                     if (query.isEmpty()) {
                         textViewResult.text = ""
